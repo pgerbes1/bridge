@@ -8,6 +8,7 @@ const expect = require('chai').expect;
 const errors = require('storj-service-error-types');
 const EventEmitter = require('events').EventEmitter;
 const ReportsRouter = require('../../../lib/server/routes/reports');
+const utils = require('../../../lib/utils');
 
 describe('ReportsRouter', function() {
 
@@ -235,6 +236,13 @@ describe('ReportsRouter', function() {
       }, done);
     });
 
+    it('should trigger a mirror on MIRROR_FAILED', function(done) {
+      reportsRouter._handleExchangeReport({
+        shardHash: 'hash',
+        exchangeResultMessage: 'MIRROR_FAILED'
+      }, done);
+    });
+
     it('should trigger a mirror on DOWNLOAD_ERROR', function(done) {
       reportsRouter._handleExchangeReport({
         shardHash: 'hash',
@@ -420,7 +428,7 @@ describe('ReportsRouter', function() {
         expect(err).to.equal(null);
         expect(Array.prototype.sort.callCount).to.equal(1);
         expect(Array.prototype.sort.args[0][0])
-          .to.equal(ReportsRouter._sortByTimeoutRate);
+          .to.equal(utils.sortByReputation);
         done();
       });
     });
